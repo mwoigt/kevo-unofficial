@@ -200,7 +200,7 @@ def kevoCommandPost(path, body, callback, contentType, passthru = null) {
     String stringBody = body?.collect { k, v -> "$k=$v" }?.join("&")?.toString() ?: ""
 
     def params = [
-            uri               : "https://mykevo.com",
+            uri               : "https://www.mykevo.com",
             path              : path,
             body              : stringBody,
             headers           : headers,
