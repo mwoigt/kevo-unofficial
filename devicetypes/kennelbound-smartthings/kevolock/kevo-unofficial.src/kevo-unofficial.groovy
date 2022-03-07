@@ -2,13 +2,12 @@ include 'asynchttp_v1'
 // Helpful: http://htmlpreview.github.io/?https://github.com/krlaframboise/Resources/blob/master/SmartThings-Icons.html
 
 metadata {
-    // Automatically generated. Make future change here.
     definition(name: "Kevo Unofficial", namespace: "kennelbound-smartthings/kevolock", author: "Kennelbound") {
-        capability "Actuator"
-        capability "Sensor"
-        capability "Health Check"
         capability "Lock"
         capability "Refresh"
+		capability "Actuator"
+        capability "Sensor"
+        capability "Health Check"
 
         attribute 'firmware', 'string'
     }
@@ -17,6 +16,7 @@ metadata {
         input name: 'kevoUsername', type: 'email', title: 'Kevo Email', description: 'Username to log into mykevo.com', required: true, displayDuringSetup: true
         input name: 'kevoPassword', type: 'password', title: 'Kevo Password', description: 'Password to log into mykevo.com', required: true, displayDuringSetup: true
         input name: 'kevoLockId', type: 'text', title: 'Lock ID', description: 'Can be found on mykevo.com in lock settings', required: true, displayDuringSetup: true
+       // input name: 'kevoUnlockDisabled', type: 'check', title: 'Disable Unlock', description: 'Disable Unlock', required: true, displayDuringSetup: true
     }
 
     tiles(scale: 2) {
@@ -104,9 +104,11 @@ def loginCredentials(response, data) {
 }
 
 def unlock() {
-    log.trace "unlock"
-    sendEvent name: 'lock', value: 'unlocking'
-    login 'unlockSendCommand'
+//    log.trace "unlock"
+//    sendEvent name: 'lock', value: 'unlocking'
+//    login 'unlockSendCommand'
+
+    log.trace "unlock is disabled"
 }
 
 def unlockSendCommand(response, data) {
@@ -248,7 +250,7 @@ def kevoCommandGet(path, query, callback, contentType, passthru = null) {
 //    log.trace "kevoCommandGet(path:$path, query:$query, contentType:$contentType, callback:$callback, headers: $headers)"
 
     def params = [
-            uri               : "https://mykevo.com",
+            uri               : "https://www.mykevo.com",
             path              : path,
             query             : query,
             headers           : headers,
@@ -298,7 +300,7 @@ def getHeaders() {
             "Cache-Control": "no-cache"
     ]
     if (state.token) {
-        headers["Referer"] = state.referer ?: "https://mykevo.com/login"
+        headers["Referer"] = state.referer ?: "https://www.mykevo.com/login"
         headers["X-CSRF-TOKEN"] = state.token
     }
     return headers
@@ -312,7 +314,7 @@ def installed() {
 
 def updated() {
     log.trace "updated()"
-    sendEvent(name: "checkInterval", value: 12 * 60, displayed: false, data: [protocol: "cloud", scheme: "untracked"])
+    sendEvent(name: "checkInterval", value: 1 * 60, displayed: false, data: [protocol: "cloud", scheme: "untracked"])
     refresh()
 }
 
@@ -320,7 +322,7 @@ def initialize() {
     log.trace "initialize()"
 
     // Setup the ping
-    sendEvent(name: "checkInterval", value: 12 * 60, displayed: false, data: [protocol: "cloud", scheme: "untracked"])
+    sendEvent(name: "checkInterval", value: 1 * 60, displayed: false, data: [protocol: "cloud", scheme: "untracked"])
 }
 
 def ping() {
